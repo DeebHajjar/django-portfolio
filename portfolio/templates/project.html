@@ -1,0 +1,110 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project page</title>
+    <link rel="stylesheet" href="{% static 'css/project.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100..700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav>
+        <a href="{% url 'index' %}"><h2>PORT<span>FOLIO</span></h2></a>
+    </nav>
+    <section class="project-page">
+        <div class="project-info">
+            <div class="title">
+                <h1>{{ project.title }}</h1>
+            </div>
+            <div class="slider-container">
+                <div class="main-slider">
+                    {% for image in project_images %}
+                        <div class="slide {% if forloop.first %}active{% endif %}">
+                            <img src="{{ image.Image.url }}" alt="Project Image {{ forloop.counter }}">
+                        </div>
+                    {% endfor %}
+
+                    <div class="slider-buttons">
+                        <button class="bttn" onclick="prevSlide()">&#10094;</button>
+                        <button class="bttn" onclick="nextSlide()">&#10095;</button>
+                    </div>
+                </div>
+
+                <div class="thumbnails">
+                    {% for image in project_images %}
+                        <div class="thumbnail {% if forloop.first %}active{% endif %}">
+                            <img src="{{ image.Image.url }}" alt="Thumbnail {{ forloop.counter }}">
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="project-text">
+                <p>{{ project.descrition }}</p>
+            </div>
+            <a href="{{ project.link.url }}" class="btn">View Website</a>
+        </div>
+
+        <div class="project-skills">
+            <div class="container-project-skills">
+                <h2><span>Skills</span> used in this project</h2>
+                <div class="content-skills">
+                    {% for skill in project_skills %}
+                        <div class="skill"><img src="{{ skill.picture.url }}" alt="{{ skill.skill }}"></div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="opinion">
+        <div class="content">
+            <h2>Rate this project</h2>
+            <form action="{% url 'rate_project' project.id %}" method="POST" class="form">
+                {% csrf_token %}
+                <div class="rating">
+                    <input value="5" name="rating" id="star5" type="radio" required>
+                    <label for="star5"></label>
+                    <input value="4" name="rating" id="star4" type="radio">
+                    <label for="star4"></label>
+                    <input value="3" name="rating" id="star3" type="radio">
+                    <label for="star3"></label>
+                    <input value="2" name="rating" id="star2" type="radio">
+                    <label for="star2"></label>
+                    <input value="1" name="rating" id="star1" type="radio">
+                    <label for="star1"></label>
+                </div>
+                <div class="message">
+                    <input class="name" type="text" name="name" placeholder="Name" required>
+                    <textarea class="textarea" name="message" placeholder="Enter message" required></textarea>
+                    <center><button class="button" type="submit">Submit</button></center>
+                </div>
+            </form>
+            
+            {% if project.ratings.all %}
+                <div class="project-ratings">
+                    <h3>Ratings</h3>
+                    {% for rating in project.ratings.all %}
+                        <div class="rating-item">
+                            <div class="rating-header">
+                                <span class="rating-name">{{ rating.name }}</span>
+                                <span class="rating-stars">{{ rating.rating }} ★</span>
+                                <span class="rating-date">{{ rating.created_at|date:"d M Y" }}</span>
+                            </div>
+                            <div class="rating-message">{{ rating.message }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <footer>
+        <p>CopyRight by <span>Deeb Hajjar</span> &copy; <span id="currentYear"></p>
+    </footer>
+
+    <script src="{% static 'js/project.js' %}"></script>
+</body>
+</html>
